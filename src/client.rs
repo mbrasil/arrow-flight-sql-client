@@ -38,15 +38,18 @@ where
     <T::ResponseBody as Body>::Error: Into<StdError> + Send,
 {
     /// create FlightSqlServiceClient using FlightServiceClient
+    #[tracing::instrument(skip_all)]
     pub fn new(client: RefCell<FlightServiceClient<T>>) -> Self {
         FlightSqlServiceClient { inner: client }
     }
 
     /// borrow mut FlightServiceClient
+    #[tracing::instrument(skip_all)]
     fn mut_client(&self) -> RefMut<'_, FlightServiceClient<T>> {
         self.inner.borrow_mut()
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_flight_info_for_command<M: ProstMessageExt>(
         &mut self,
         cmd: M,
@@ -61,12 +64,14 @@ where
     }
 
     /// Execute a query on the server.
+    #[tracing::instrument(skip_all)]
     pub async fn execute(&mut self, query: String) -> Result<FlightInfo> {
         let cmd = CommandStatementQuery { query };
         self.get_flight_info_for_command(cmd).await
     }
 
     /// Execute a update query on the server.
+    #[tracing::instrument(skip_all)]
     pub async fn execute_update(&mut self, query: String) -> Result<i64> {
         let cmd = CommandStatementUpdate { query };
         let descriptor = FlightDescriptor::new_cmd(cmd.as_any().encode_to_vec());
@@ -91,18 +96,21 @@ where
     }
 
     /// Request a list of catalogs.
+    #[tracing::instrument(skip_all)]
     pub async fn get_catalogs(&mut self) -> Result<FlightInfo> {
         self.get_flight_info_for_command(CommandGetCatalogs {})
             .await
     }
 
     /// Request a list of database schemas.
+    #[tracing::instrument(skip_all)]
     pub async fn get_db_schemas(&mut self, request: CommandGetDbSchemas) -> Result<FlightInfo> {
         self.get_flight_info_for_command(request).await
     }
 
     /// Given a flight ticket and schema, request to be sent the
     /// stream. Returns record batch stream reader
+    #[tracing::instrument(skip_all)]
     pub async fn do_get(&mut self, ticket: Ticket) -> Result<Streaming<FlightData>> {
         Ok(self
             .mut_client()
@@ -113,17 +121,20 @@ where
     }
 
     /// Request a list of tables.
+    #[tracing::instrument(skip_all)]
     pub async fn get_tables(&mut self, request: CommandGetTables) -> Result<FlightInfo> {
         self.get_flight_info_for_command(request).await
     }
 
     /// Request the primary keys for a table.
+    #[tracing::instrument(skip_all)]
     pub async fn get_primary_keys(&mut self, request: CommandGetPrimaryKeys) -> Result<FlightInfo> {
         self.get_flight_info_for_command(request).await
     }
 
     /// Retrieves a description about the foreign key columns that reference the
     /// primary key columns of the given table.
+    #[tracing::instrument(skip_all)]
     pub async fn get_exported_keys(
         &mut self,
         request: CommandGetExportedKeys,
@@ -132,6 +143,7 @@ where
     }
 
     /// Retrieves the foreign key columns for the given table.
+    #[tracing::instrument(skip_all)]
     pub async fn get_imported_keys(
         &mut self,
         request: CommandGetImportedKeys,
@@ -142,6 +154,7 @@ where
     /// Retrieves a description of the foreign key columns in the given foreign key
     /// table that reference the primary key or the columns representing a unique
     /// constraint of the parent table (could be the same or a different table).
+    #[tracing::instrument(skip_all)]
     pub async fn get_cross_reference(
         &mut self,
         request: CommandGetCrossReference,
@@ -150,12 +163,14 @@ where
     }
 
     /// Request a list of table types.
+    #[tracing::instrument(skip_all)]
     pub async fn get_table_types(&mut self) -> Result<FlightInfo> {
         self.get_flight_info_for_command(CommandGetTableTypes {})
             .await
     }
 
     /// Request a list of SQL information.
+    #[tracing::instrument(skip_all)]
     pub async fn get_sql_info(&mut self, sql_infos: Vec<SqlInfo>) -> Result<FlightInfo> {
         let request = CommandGetSqlInfo {
             info: sql_infos.iter().map(|sql_info| *sql_info as u32).collect(),
@@ -164,6 +179,7 @@ where
     }
 
     /// Create a prepared statement object.
+    #[tracing::instrument(skip_all)]
     pub async fn prepare(&mut self, query: String) -> Result<PreparedStatement<'_, T>> {
         let cmd = ActionCreatePreparedStatementRequest { query };
         let action = Action {
@@ -195,6 +211,7 @@ where
     }
 
     /// Explicitly shut down and clean up the client.
+    #[tracing::instrument(skip_all)]
     pub async fn close(&mut self) -> Result<()> {
         Ok(())
     }
@@ -234,6 +251,7 @@ where
         }
     }
     /// Executes the prepared statement query on the server.
+    #[tracing::instrument(skip_all)]
     pub async fn execute(&mut self) -> Result<FlightInfo> {
         if self.is_closed() {
             return Err(ArrowError::IoError("Statement already closed.".to_string()));
@@ -264,6 +282,7 @@ where
     }
 
     /// Executes the prepared statement update query on the server.
+    #[tracing::instrument(skip_all)]
     pub async fn execute_update(&self) -> Result<i64> {
         if self.is_closed() {
             return Err(ArrowError::IoError("Statement already closed.".to_string()));
@@ -293,16 +312,19 @@ where
     }
 
     /// Retrieve the parameter schema from the query.
+    #[tracing::instrument(skip_all)]
     pub async fn parameter_schema(&self) -> Result<&Schema> {
         Ok(&self.parameter_schema)
     }
 
     /// Retrieve the ResultSet schema from the query.
+    #[tracing::instrument(skip_all)]
     pub async fn dataset_schema(&self) -> Result<&Schema> {
         Ok(&self.dataset_schema)
     }
 
     /// Set a RecordBatch that contains the parameters that will be bind.
+    #[tracing::instrument(skip_all)]
     pub async fn set_parameters(&mut self, parameter_binding: RecordBatch<'a>) -> Result<()> {
         self.parameter_binding = Some(parameter_binding);
         Ok(())
@@ -310,6 +332,7 @@ where
 
     /// Close the prepared statement, so that this PreparedStatement can not used
     /// anymore and server can free up any resources.
+    #[tracing::instrument(skip_all)]
     pub async fn close(&mut self) -> Result<()> {
         if self.is_closed() {
             return Err(ArrowError::IoError("Statement already closed.".to_string()));
@@ -331,32 +354,39 @@ where
     }
 
     /// Check if the prepared statement is closed.
+    #[tracing::instrument(skip_all)]
     pub fn is_closed(&self) -> bool {
         self.is_closed
     }
 
     /// borrow mut FlightServiceClient
+    #[tracing::instrument(skip_all)]
     fn mut_client(&self) -> RefMut<'_, FlightServiceClient<T>> {
         self.inner.borrow_mut()
     }
 }
 
+#[tracing::instrument(skip_all)]
 pub fn decode_error_to_arrow_error(err: prost::DecodeError) -> ArrowError {
     ArrowError::IoError(err.to_string())
 }
 
+#[tracing::instrument(skip_all)]
 pub fn arrow_error_to_status(err: arrow::error::ArrowError) -> tonic::Status {
     tonic::Status::internal(format!("{:?}", err))
 }
 
+#[tracing::instrument(skip_all)]
 pub fn status_to_arrow_error(status: tonic::Status) -> ArrowError {
     ArrowError::IoError(format!("{:?}", status))
 }
 
+#[tracing::instrument(skip_all)]
 pub fn transport_error_to_arrow_erorr(error: tonic::transport::Error) -> ArrowError {
     ArrowError::IoError(format!("{}", error))
 }
 
+#[tracing::instrument(skip_all)]
 pub fn arrow_schema_from_flight_info(fi: &FlightInfo) -> Result<Schema> {
     let ipc_message = arrow::ipc::size_prefixed_root_as_message(&fi.schema[4..])
         .map_err(|e| ArrowError::ComputeError(format!("{:?}", e)))?;
@@ -377,6 +407,7 @@ pub enum ArrowFlightData {
     Schema(arrow::datatypes::Schema),
 }
 
+#[tracing::instrument(skip_all)]
 pub fn arrow_data_from_flight_data(
     flight_data: FlightData,
     arrow_schema_ref: &SchemaRef,

@@ -5,3 +5,4 @@ pub mod arrow_flight_protocol;
 pub mod arrow_flight_protocol_sql;
 
 pub mod client;
+pub mod tracing;

@@ -21,6 +21,13 @@ prost-types = { version = "0.11" }
 prost-derive = "0.11"
 futures = { version = "0.3", default-features = false, features = ["alloc"] }
 bytes = "1"
+tracing = "0.1"
+tracing-opentelemetry = "0.18"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+opentelemetry = { version = "0.18", features = ["trace", "rt-tokio"] }
+opentelemetry-otlp = { version = "0.11", features = ["tokio"] }
+opentelemetry-semantic-conventions = "0.10"
+opentelemetry-tonic = "0.1"
 
 [build-dependencies]
 tonic-build = "0.8"
