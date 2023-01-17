@@ -290,11 +290,9 @@ async fn print_flight_data_stream(
         .map_err(status_to_arrow_error)?
     {
         let arrow_data = arrow_data_from_flight_data(flight_data, &arrow_schema_ref)?;
-        match arrow_data {
-            ArrowFlightData::RecordBatch(record_batch) => {
-                arrow::util::pretty::print_batches(&[record_batch])?;
-            }
-            _ => {} // no data to print..
+
+        if let ArrowFlightData::RecordBatch(record_batch) = arrow_data {
+            arrow::util::pretty::print_batches(&[record_batch])?;
         }
     }
 

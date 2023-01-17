@@ -396,11 +396,12 @@ pub fn arrow_data_from_flight_data(
 
             let dictionaries_by_field = HashMap::new();
             let record_batch = arrow::ipc::reader::read_record_batch(
-                &flight_data.data_body,
+                &arrow::buffer::Buffer::from(&flight_data.data_body),
                 ipc_record_batch,
                 arrow_schema_ref.clone(),
                 &dictionaries_by_field,
                 None,
+                &ipc_message.version(),
             )?;
             Ok(ArrowFlightData::RecordBatch(record_batch))
         }
