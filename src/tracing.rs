@@ -1,25 +1,23 @@
-use opentelemetry::{runtime::Tokio, sdk::{trace, trace::Tracer, Resource}, KeyValue, global};
-use opentelemetry::sdk::propagation::TraceContextPropagator;
+use opentelemetry::{
+    global,
+    runtime::Tokio,
+    sdk::{propagation::TraceContextPropagator, trace, trace::Tracer, Resource},
+    KeyValue,
+};
+use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_semantic_conventions::resource::SERVICE_NAME;
-use tonic::transport::Channel;
 use tracing::{debug, subscriber};
-use tracing_subscriber::{filter, fmt::format::FmtSpan, layer::SubscriberExt, Layer, Registry};
+use tracing_subscriber::{filter, layer::SubscriberExt, EnvFilter, Layer, Registry};
 
 ///  Create the opentelemetry::sdk::trace::Tracer to use in the telemetry layer.
 /// * `otlp_endpoint` - The opentelemetry collector endpoint.
 async fn create_opentelemetry_tracer(otlp_endpoint: String) -> Tracer {
-    let channel = Channel::from_shared(otlp_endpoint)
-        .unwrap()
-        .connect()
-        .await
-        .unwrap();
-
     opentelemetry_otlp::new_pipeline()
         .tracing()
         .with_exporter(
             opentelemetry_otlp::new_exporter()
                 .tonic()
-                .with_channel(channel),
+                .with_endpoint(otlp_endpoint),
         )
         .with_trace_config(
             trace::config().with_resource(Resource::new(vec![KeyValue::new(
@@ -36,15 +34,24 @@ async fn create_opentelemetry_tracer(otlp_endpoint: String) -> Tracer {
 pub async fn setup_tracing(otlp_endpoint: &String) {
     global::set_text_map_propagator(TraceContextPropagator::new());
 
+    let env_filter = EnvFilter::try_from_default_env()
+        .or_else(|_| EnvFilter::try_new("warn,arrow_flight_sql_client=debug"))
+        .unwrap();
+
+    let log_layer = tracing_subscriber::fmt::layer();
+
+    let tracer = create_opentelemetry_tracer(otlp_endpoint.to_string()).await;
+
     let telemetry_layer = tracing_opentelemetry::layer()
-        .with_tracer(create_opentelemetry_tracer(otlp_endpoint.to_string()).await)
+        .with_tracer(tracer)
+        .with_exception_field_propagation(true)
+        .with_tracked_inactivity(true)
         .with_filter(filter::LevelFilter::INFO);
 
-    let log_layer = tracing_subscriber::fmt::layer()
-        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
-        .with_filter(filter::LevelFilter::DEBUG);
-
-    let collector = Registry::default().with(telemetry_layer).with(log_layer);
+    let collector = Registry::default()
+        .with(env_filter)
+        .with(log_layer)
+        .with(telemetry_layer);
 
     subscriber::set_global_default(collector).unwrap();
 
