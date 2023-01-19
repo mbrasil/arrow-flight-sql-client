@@ -1,12 +1,19 @@
 use opentelemetry::{
     global,
+    propagation::{Extractor, Injector},
     runtime::Tokio,
     sdk::{propagation::TraceContextPropagator, trace, trace::Tracer, Resource},
     KeyValue,
 };
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_semantic_conventions::resource::SERVICE_NAME;
+use std::str::FromStr;
+use tonic::{
+    metadata::{KeyRef, MetadataKey, MetadataMap},
+    Request,
+};
 use tracing::{debug, subscriber};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 use tracing_subscriber::{filter, layer::SubscriberExt, EnvFilter, Layer, Registry};
 
 ///  Create the opentelemetry::sdk::trace::Tracer to use in the telemetry layer.
@@ -59,4 +66,52 @@ pub async fn setup_tracing(otlp_endpoint: &String) {
         "Telemetry subscriber initiated for the OpenTelemetry endpoint [{}].",
         otlp_endpoint
     );
+}
+
+pub struct MetadataInjector<'a>(&'a mut MetadataMap);
+
+impl<'a> Injector for MetadataInjector<'a> {
+    /// Set a key and value in the MetadataMap.  Does nothing if the key or value are not valid inputs
+    fn set(&mut self, key: &str, value: String) {
+        if let Ok(key) = MetadataKey::from_str(key) {
+            if let Ok(val) = value.parse() {
+                self.0.insert(key, val);
+            }
+        }
+    }
+}
+
+pub struct MetadataExtractor<'a>(&'a MetadataMap);
+
+impl<'a> Extractor for MetadataExtractor<'a> {
+    /// Get a value for a key from the MetadataMap.  If the value can't be converted to &str, returns None
+    fn get(&self, key: &str) -> Option<&str> {
+        self.0.get(key).and_then(|metadata| metadata.to_str().ok())
+    }
+
+    /// Collect all the keys from the MetadataMap.
+    fn keys(&self) -> Vec<&str> {
+        self.0
+            .keys()
+            .map(|key| match key {
+                KeyRef::Ascii(v) => v.as_str(),
+                KeyRef::Binary(v) => v.as_str(),
+            })
+            .collect::<Vec<_>>()
+    }
+}
+
+pub fn tracing_parent_span_from_req<T>(request: &Request<T>) {
+    let cx = global::get_text_map_propagator(|propagator| {
+        propagator.extract(&MetadataExtractor(request.metadata()))
+    });
+
+    tracing::Span::current().set_parent(cx);
+}
+
+pub fn tracing_current_span_to_req<T>(request: &mut Request<T>) {
+    let cx = tracing::Span::current().context();
+    global::get_text_map_propagator(|propagator| {
+        propagator.inject_context(&cx, &mut MetadataInjector(request.metadata_mut()))
+    });
 }
