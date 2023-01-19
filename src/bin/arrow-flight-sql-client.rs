@@ -12,6 +12,7 @@ use opentelemetry::global;
 use std::cell::RefCell;
 use tonic::transport::Channel;
 use tonic::Streaming;
+use tracing::info_span;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -177,6 +178,8 @@ async fn main() -> Result<()> {
             query,
         }) => {
             setup_tracing(otlp_endpoint).await;
+            let _parent_span = info_span!("execute command").entered();
+
             let mut client = new_client(hostname, port).await?;
             let fi = client.execute(query.to_string()).await?;
             get_and_print(client, fi).await
@@ -191,6 +194,8 @@ async fn main() -> Result<()> {
             query,
         }) => {
             setup_tracing(otlp_endpoint).await;
+            let _parent_span = info_span!("execute update command").entered();
+
             let mut client = new_client(hostname, port).await?;
             let record_count = client.execute_update(query.to_string()).await?;
             println!("Updated {} records.", record_count);
@@ -205,6 +210,8 @@ async fn main() -> Result<()> {
                 },
         }) => {
             setup_tracing(otlp_endpoint).await;
+            let _parent_span = info_span!("get catalogs command").entered();
+
             let mut client = new_client(hostname, port).await?;
             let fi = client.get_catalogs().await?;
             get_and_print(client, fi).await
@@ -218,6 +225,8 @@ async fn main() -> Result<()> {
                 },
         }) => {
             setup_tracing(otlp_endpoint).await;
+            let _parent_span = info_span!("get table types command").entered();
+
             let mut client = new_client(hostname, port).await?;
             let fi = client.get_table_types().await?;
             get_and_print(client, fi).await
@@ -233,6 +242,8 @@ async fn main() -> Result<()> {
             db_schema_filter_pattern: schema,
         }) => {
             setup_tracing(otlp_endpoint).await;
+            let _parent_span = info_span!("get schemas command").entered();
+
             let mut client = new_client(hostname, port).await?;
             let fi = client
                 .get_db_schemas(CommandGetDbSchemas {
@@ -255,6 +266,8 @@ async fn main() -> Result<()> {
             include_schema,
         }) => {
             setup_tracing(otlp_endpoint).await;
+            let _parent_span = info_span!("get tables command").entered();
+
             let mut client = new_client(hostname, port).await?;
             let fi = client
                 .get_tables(CommandGetTables {
@@ -283,6 +296,8 @@ async fn main() -> Result<()> {
             table,
         }) => {
             setup_tracing(otlp_endpoint).await;
+            let _parent_span = info_span!("get exported keys command").entered();
+
             let mut client = new_client(hostname, port).await?;
             let fi = client
                 .get_exported_keys(CommandGetExportedKeys {
@@ -305,6 +320,8 @@ async fn main() -> Result<()> {
             table,
         }) => {
             setup_tracing(otlp_endpoint).await;
+            let _parent_span = info_span!("get imported keys command").entered();
+
             let mut client = new_client(hostname, port).await?;
             let fi = client
                 .get_imported_keys(CommandGetImportedKeys {
@@ -327,6 +344,8 @@ async fn main() -> Result<()> {
             table,
         }) => {
             setup_tracing(otlp_endpoint).await;
+            let _parent_span = info_span!("get primary keys command").entered();
+
             let mut client = new_client(hostname, port).await?;
             let fi = client
                 .get_primary_keys(CommandGetPrimaryKeys {
