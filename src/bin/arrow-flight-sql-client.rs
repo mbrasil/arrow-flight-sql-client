@@ -165,6 +165,16 @@ async fn get_and_print(mut client: FlightSqlServiceClient<Channel>, fi: FlightIn
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    if let Err(e) = parse_cli().await {
+        global::shutdown_tracer_provider();
+        panic!("Error in the client: {}", e);
+    }
+
+    global::shutdown_tracer_provider();
+    Ok(())
+}
+
+async fn parse_cli() -> Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
@@ -356,10 +366,8 @@ async fn main() -> Result<()> {
                 .await?;
             get_and_print(client, fi).await
         }
-    }
-    .unwrap();
+    }?;
 
-    global::shutdown_tracer_provider();
     Ok(())
 }
 
