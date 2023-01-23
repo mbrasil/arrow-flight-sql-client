@@ -18,7 +18,7 @@ use tracing_subscriber::{filter, layer::SubscriberExt, EnvFilter, Layer, Registr
 
 ///  Create the opentelemetry::sdk::trace::Tracer to use in the telemetry layer.
 /// * `otlp_endpoint` - The opentelemetry collector endpoint.
-async fn create_opentelemetry_tracer(otlp_endpoint: String) -> Tracer {
+fn create_opentelemetry_tracer(otlp_endpoint: String) -> Tracer {
     opentelemetry_otlp::new_pipeline()
         .tracing()
         .with_exporter(
@@ -47,7 +47,7 @@ pub async fn setup_tracing(otlp_endpoint: &String) {
 
     let log_layer = tracing_subscriber::fmt::layer();
 
-    let tracer = create_opentelemetry_tracer(otlp_endpoint.to_string()).await;
+    let tracer = create_opentelemetry_tracer(otlp_endpoint.to_string());
 
     let telemetry_layer = tracing_opentelemetry::layer()
         .with_tracer(tracer)
