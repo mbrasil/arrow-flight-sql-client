@@ -300,12 +300,12 @@ pub mod flight_service_client {
         T::ResponseBody: Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
-        #[tracing::instrument(skip_all)]
+        #[tracing::instrument(level = "debug", skip_all)]
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
             Self { inner }
         }
-        #[tracing::instrument(skip_all)]
+        #[tracing::instrument(level = "debug", skip_all)]
         pub fn with_origin(inner: T, origin: Uri) -> Self {
             let inner = tonic::client::Grpc::with_origin(inner, origin);
             Self { inner }

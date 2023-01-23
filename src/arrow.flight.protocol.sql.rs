@@ -201,9 +201,7 @@ pub struct CommandGetTables {
     ///     - "%" means to match any substring with 0 or more characters.
     ///     - "_" means to match any one character.
     #[prost(string, optional, tag = "3")]
-    pub table_name_filter_pattern: ::core::option::Option<
-        ::prost::alloc::string::String,
-    >,
+    pub table_name_filter_pattern: ::core::option::Option<::prost::alloc::string::String>,
     ///
     /// Specifies a filter of table types which must match.
     /// The table types depend on vendor/implementation. It is usually used to separate tables from views or system tables.
@@ -1112,6 +1110,7 @@ impl SqlInfo {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlInfo::FlightSqlServerName => "FLIGHT_SQL_SERVER_NAME",
@@ -1136,15 +1135,11 @@ impl SqlInfo {
             SqlInfo::SqlSupportsColumnAliasing => "SQL_SUPPORTS_COLUMN_ALIASING",
             SqlInfo::SqlNullPlusNullIsNull => "SQL_NULL_PLUS_NULL_IS_NULL",
             SqlInfo::SqlSupportsConvert => "SQL_SUPPORTS_CONVERT",
-            SqlInfo::SqlSupportsTableCorrelationNames => {
-                "SQL_SUPPORTS_TABLE_CORRELATION_NAMES"
-            }
+            SqlInfo::SqlSupportsTableCorrelationNames => "SQL_SUPPORTS_TABLE_CORRELATION_NAMES",
             SqlInfo::SqlSupportsDifferentTableCorrelationNames => {
                 "SQL_SUPPORTS_DIFFERENT_TABLE_CORRELATION_NAMES"
             }
-            SqlInfo::SqlSupportsExpressionsInOrderBy => {
-                "SQL_SUPPORTS_EXPRESSIONS_IN_ORDER_BY"
-            }
+            SqlInfo::SqlSupportsExpressionsInOrderBy => "SQL_SUPPORTS_EXPRESSIONS_IN_ORDER_BY",
             SqlInfo::SqlSupportsOrderByUnrelated => "SQL_SUPPORTS_ORDER_BY_UNRELATED",
             SqlInfo::SqlSupportedGroupBy => "SQL_SUPPORTED_GROUP_BY",
             SqlInfo::SqlSupportsLikeEscapeClause => "SQL_SUPPORTS_LIKE_ESCAPE_CLAUSE",
@@ -1161,15 +1156,11 @@ impl SqlInfo {
             SqlInfo::SqlCatalogAtStart => "SQL_CATALOG_AT_START",
             SqlInfo::SqlSchemasSupportedActions => "SQL_SCHEMAS_SUPPORTED_ACTIONS",
             SqlInfo::SqlCatalogsSupportedActions => "SQL_CATALOGS_SUPPORTED_ACTIONS",
-            SqlInfo::SqlSupportedPositionedCommands => {
-                "SQL_SUPPORTED_POSITIONED_COMMANDS"
-            }
+            SqlInfo::SqlSupportedPositionedCommands => "SQL_SUPPORTED_POSITIONED_COMMANDS",
             SqlInfo::SqlSelectForUpdateSupported => "SQL_SELECT_FOR_UPDATE_SUPPORTED",
             SqlInfo::SqlStoredProceduresSupported => "SQL_STORED_PROCEDURES_SUPPORTED",
             SqlInfo::SqlSupportedSubqueries => "SQL_SUPPORTED_SUBQUERIES",
-            SqlInfo::SqlCorrelatedSubqueriesSupported => {
-                "SQL_CORRELATED_SUBQUERIES_SUPPORTED"
-            }
+            SqlInfo::SqlCorrelatedSubqueriesSupported => "SQL_CORRELATED_SUBQUERIES_SUPPORTED",
             SqlInfo::SqlSupportedUnions => "SQL_SUPPORTED_UNIONS",
             SqlInfo::SqlMaxBinaryLiteralLength => "SQL_MAX_BINARY_LITERAL_LENGTH",
             SqlInfo::SqlMaxCharLiteralLength => "SQL_MAX_CHAR_LITERAL_LENGTH",
@@ -1192,9 +1183,7 @@ impl SqlInfo {
             SqlInfo::SqlMaxTableNameLength => "SQL_MAX_TABLE_NAME_LENGTH",
             SqlInfo::SqlMaxTablesInSelect => "SQL_MAX_TABLES_IN_SELECT",
             SqlInfo::SqlMaxUsernameLength => "SQL_MAX_USERNAME_LENGTH",
-            SqlInfo::SqlDefaultTransactionIsolation => {
-                "SQL_DEFAULT_TRANSACTION_ISOLATION"
-            }
+            SqlInfo::SqlDefaultTransactionIsolation => "SQL_DEFAULT_TRANSACTION_ISOLATION",
             SqlInfo::SqlTransactionsSupported => "SQL_TRANSACTIONS_SUPPORTED",
             SqlInfo::SqlSupportedTransactionsIsolationLevels => {
                 "SQL_SUPPORTED_TRANSACTIONS_ISOLATION_LEVELS"
@@ -1228,6 +1217,7 @@ impl SqlInfo {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "FLIGHT_SQL_SERVER_NAME" => Some(Self::FlightSqlServerName),
@@ -1252,21 +1242,15 @@ impl SqlInfo {
             "SQL_SUPPORTS_COLUMN_ALIASING" => Some(Self::SqlSupportsColumnAliasing),
             "SQL_NULL_PLUS_NULL_IS_NULL" => Some(Self::SqlNullPlusNullIsNull),
             "SQL_SUPPORTS_CONVERT" => Some(Self::SqlSupportsConvert),
-            "SQL_SUPPORTS_TABLE_CORRELATION_NAMES" => {
-                Some(Self::SqlSupportsTableCorrelationNames)
-            }
+            "SQL_SUPPORTS_TABLE_CORRELATION_NAMES" => Some(Self::SqlSupportsTableCorrelationNames),
             "SQL_SUPPORTS_DIFFERENT_TABLE_CORRELATION_NAMES" => {
                 Some(Self::SqlSupportsDifferentTableCorrelationNames)
             }
-            "SQL_SUPPORTS_EXPRESSIONS_IN_ORDER_BY" => {
-                Some(Self::SqlSupportsExpressionsInOrderBy)
-            }
+            "SQL_SUPPORTS_EXPRESSIONS_IN_ORDER_BY" => Some(Self::SqlSupportsExpressionsInOrderBy),
             "SQL_SUPPORTS_ORDER_BY_UNRELATED" => Some(Self::SqlSupportsOrderByUnrelated),
             "SQL_SUPPORTED_GROUP_BY" => Some(Self::SqlSupportedGroupBy),
             "SQL_SUPPORTS_LIKE_ESCAPE_CLAUSE" => Some(Self::SqlSupportsLikeEscapeClause),
-            "SQL_SUPPORTS_NON_NULLABLE_COLUMNS" => {
-                Some(Self::SqlSupportsNonNullableColumns)
-            }
+            "SQL_SUPPORTS_NON_NULLABLE_COLUMNS" => Some(Self::SqlSupportsNonNullableColumns),
             "SQL_SUPPORTED_GRAMMAR" => Some(Self::SqlSupportedGrammar),
             "SQL_ANSI92_SUPPORTED_LEVEL" => Some(Self::SqlAnsi92SupportedLevel),
             "SQL_SUPPORTS_INTEGRITY_ENHANCEMENT_FACILITY" => {
@@ -1279,15 +1263,11 @@ impl SqlInfo {
             "SQL_CATALOG_AT_START" => Some(Self::SqlCatalogAtStart),
             "SQL_SCHEMAS_SUPPORTED_ACTIONS" => Some(Self::SqlSchemasSupportedActions),
             "SQL_CATALOGS_SUPPORTED_ACTIONS" => Some(Self::SqlCatalogsSupportedActions),
-            "SQL_SUPPORTED_POSITIONED_COMMANDS" => {
-                Some(Self::SqlSupportedPositionedCommands)
-            }
+            "SQL_SUPPORTED_POSITIONED_COMMANDS" => Some(Self::SqlSupportedPositionedCommands),
             "SQL_SELECT_FOR_UPDATE_SUPPORTED" => Some(Self::SqlSelectForUpdateSupported),
             "SQL_STORED_PROCEDURES_SUPPORTED" => Some(Self::SqlStoredProceduresSupported),
             "SQL_SUPPORTED_SUBQUERIES" => Some(Self::SqlSupportedSubqueries),
-            "SQL_CORRELATED_SUBQUERIES_SUPPORTED" => {
-                Some(Self::SqlCorrelatedSubqueriesSupported)
-            }
+            "SQL_CORRELATED_SUBQUERIES_SUPPORTED" => Some(Self::SqlCorrelatedSubqueriesSupported),
             "SQL_SUPPORTED_UNIONS" => Some(Self::SqlSupportedUnions),
             "SQL_MAX_BINARY_LITERAL_LENGTH" => Some(Self::SqlMaxBinaryLiteralLength),
             "SQL_MAX_CHAR_LITERAL_LENGTH" => Some(Self::SqlMaxCharLiteralLength),
@@ -1310,9 +1290,7 @@ impl SqlInfo {
             "SQL_MAX_TABLE_NAME_LENGTH" => Some(Self::SqlMaxTableNameLength),
             "SQL_MAX_TABLES_IN_SELECT" => Some(Self::SqlMaxTablesInSelect),
             "SQL_MAX_USERNAME_LENGTH" => Some(Self::SqlMaxUsernameLength),
-            "SQL_DEFAULT_TRANSACTION_ISOLATION" => {
-                Some(Self::SqlDefaultTransactionIsolation)
-            }
+            "SQL_DEFAULT_TRANSACTION_ISOLATION" => Some(Self::SqlDefaultTransactionIsolation),
             "SQL_TRANSACTIONS_SUPPORTED" => Some(Self::SqlTransactionsSupported),
             "SQL_SUPPORTED_TRANSACTIONS_ISOLATION_LEVELS" => {
                 Some(Self::SqlSupportedTransactionsIsolationLevels)
@@ -1360,6 +1338,7 @@ impl SqlSupportedCaseSensitivity {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlSupportedCaseSensitivity::SqlCaseSensitivityUnknown => {
@@ -1377,6 +1356,7 @@ impl SqlSupportedCaseSensitivity {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_CASE_SENSITIVITY_UNKNOWN" => Some(Self::SqlCaseSensitivityUnknown),
@@ -1402,6 +1382,7 @@ impl SqlNullOrdering {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlNullOrdering::SqlNullsSortedHigh => "SQL_NULLS_SORTED_HIGH",
@@ -1411,6 +1392,7 @@ impl SqlNullOrdering {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_NULLS_SORTED_HIGH" => Some(Self::SqlNullsSortedHigh),
@@ -1433,6 +1415,7 @@ impl SupportedSqlGrammar {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SupportedSqlGrammar::SqlMinimumGrammar => "SQL_MINIMUM_GRAMMAR",
@@ -1441,6 +1424,7 @@ impl SupportedSqlGrammar {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_MINIMUM_GRAMMAR" => Some(Self::SqlMinimumGrammar),
@@ -1462,16 +1446,16 @@ impl SupportedAnsi92SqlGrammarLevel {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SupportedAnsi92SqlGrammarLevel::Ansi92EntrySql => "ANSI92_ENTRY_SQL",
-            SupportedAnsi92SqlGrammarLevel::Ansi92IntermediateSql => {
-                "ANSI92_INTERMEDIATE_SQL"
-            }
+            SupportedAnsi92SqlGrammarLevel::Ansi92IntermediateSql => "ANSI92_INTERMEDIATE_SQL",
             SupportedAnsi92SqlGrammarLevel::Ansi92FullSql => "ANSI92_FULL_SQL",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "ANSI92_ENTRY_SQL" => Some(Self::Ansi92EntrySql),
@@ -1493,6 +1477,7 @@ impl SqlOuterJoinsSupportLevel {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlOuterJoinsSupportLevel::SqlJoinsUnsupported => "SQL_JOINS_UNSUPPORTED",
@@ -1501,6 +1486,7 @@ impl SqlOuterJoinsSupportLevel {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_JOINS_UNSUPPORTED" => Some(Self::SqlJoinsUnsupported),
@@ -1521,6 +1507,7 @@ impl SqlSupportedGroupBy {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlSupportedGroupBy::SqlGroupByUnrelated => "SQL_GROUP_BY_UNRELATED",
@@ -1528,6 +1515,7 @@ impl SqlSupportedGroupBy {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_GROUP_BY_UNRELATED" => Some(Self::SqlGroupByUnrelated),
@@ -1548,6 +1536,7 @@ impl SqlSupportedElementActions {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlSupportedElementActions::SqlElementInProcedureCalls => {
@@ -1562,15 +1551,12 @@ impl SqlSupportedElementActions {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_ELEMENT_IN_PROCEDURE_CALLS" => Some(Self::SqlElementInProcedureCalls),
-            "SQL_ELEMENT_IN_INDEX_DEFINITIONS" => {
-                Some(Self::SqlElementInIndexDefinitions)
-            }
-            "SQL_ELEMENT_IN_PRIVILEGE_DEFINITIONS" => {
-                Some(Self::SqlElementInPrivilegeDefinitions)
-            }
+            "SQL_ELEMENT_IN_INDEX_DEFINITIONS" => Some(Self::SqlElementInIndexDefinitions),
+            "SQL_ELEMENT_IN_PRIVILEGE_DEFINITIONS" => Some(Self::SqlElementInPrivilegeDefinitions),
             _ => None,
         }
     }
@@ -1586,17 +1572,15 @@ impl SqlSupportedPositionedCommands {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            SqlSupportedPositionedCommands::SqlPositionedDelete => {
-                "SQL_POSITIONED_DELETE"
-            }
-            SqlSupportedPositionedCommands::SqlPositionedUpdate => {
-                "SQL_POSITIONED_UPDATE"
-            }
+            SqlSupportedPositionedCommands::SqlPositionedDelete => "SQL_POSITIONED_DELETE",
+            SqlSupportedPositionedCommands::SqlPositionedUpdate => "SQL_POSITIONED_UPDATE",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_POSITIONED_DELETE" => Some(Self::SqlPositionedDelete),
@@ -1618,19 +1602,17 @@ impl SqlSupportedSubqueries {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            SqlSupportedSubqueries::SqlSubqueriesInComparisons => {
-                "SQL_SUBQUERIES_IN_COMPARISONS"
-            }
+            SqlSupportedSubqueries::SqlSubqueriesInComparisons => "SQL_SUBQUERIES_IN_COMPARISONS",
             SqlSupportedSubqueries::SqlSubqueriesInExists => "SQL_SUBQUERIES_IN_EXISTS",
             SqlSupportedSubqueries::SqlSubqueriesInIns => "SQL_SUBQUERIES_IN_INS",
-            SqlSupportedSubqueries::SqlSubqueriesInQuantifieds => {
-                "SQL_SUBQUERIES_IN_QUANTIFIEDS"
-            }
+            SqlSupportedSubqueries::SqlSubqueriesInQuantifieds => "SQL_SUBQUERIES_IN_QUANTIFIEDS",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_SUBQUERIES_IN_COMPARISONS" => Some(Self::SqlSubqueriesInComparisons),
@@ -1652,6 +1634,7 @@ impl SqlSupportedUnions {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlSupportedUnions::SqlUnion => "SQL_UNION",
@@ -1659,6 +1642,7 @@ impl SqlSupportedUnions {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_UNION" => Some(Self::SqlUnion),
@@ -1681,6 +1665,7 @@ impl SqlTransactionIsolationLevel {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlTransactionIsolationLevel::SqlTransactionNone => "SQL_TRANSACTION_NONE",
@@ -1699,12 +1684,11 @@ impl SqlTransactionIsolationLevel {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_TRANSACTION_NONE" => Some(Self::SqlTransactionNone),
-            "SQL_TRANSACTION_READ_UNCOMMITTED" => {
-                Some(Self::SqlTransactionReadUncommitted)
-            }
+            "SQL_TRANSACTION_READ_UNCOMMITTED" => Some(Self::SqlTransactionReadUncommitted),
             "SQL_TRANSACTION_READ_COMMITTED" => Some(Self::SqlTransactionReadCommitted),
             "SQL_TRANSACTION_REPEATABLE_READ" => Some(Self::SqlTransactionRepeatableRead),
             "SQL_TRANSACTION_SERIALIZABLE" => Some(Self::SqlTransactionSerializable),
@@ -1724,11 +1708,10 @@ impl SqlSupportedTransactions {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            SqlSupportedTransactions::SqlTransactionUnspecified => {
-                "SQL_TRANSACTION_UNSPECIFIED"
-            }
+            SqlSupportedTransactions::SqlTransactionUnspecified => "SQL_TRANSACTION_UNSPECIFIED",
             SqlSupportedTransactions::SqlDataDefinitionTransactions => {
                 "SQL_DATA_DEFINITION_TRANSACTIONS"
             }
@@ -1738,15 +1721,12 @@ impl SqlSupportedTransactions {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_TRANSACTION_UNSPECIFIED" => Some(Self::SqlTransactionUnspecified),
-            "SQL_DATA_DEFINITION_TRANSACTIONS" => {
-                Some(Self::SqlDataDefinitionTransactions)
-            }
-            "SQL_DATA_MANIPULATION_TRANSACTIONS" => {
-                Some(Self::SqlDataManipulationTransactions)
-            }
+            "SQL_DATA_DEFINITION_TRANSACTIONS" => Some(Self::SqlDataDefinitionTransactions),
+            "SQL_DATA_MANIPULATION_TRANSACTIONS" => Some(Self::SqlDataManipulationTransactions),
             _ => None,
         }
     }
@@ -1764,6 +1744,7 @@ impl SqlSupportedResultSetType {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlSupportedResultSetType::SqlResultSetTypeUnspecified => {
@@ -1781,6 +1762,7 @@ impl SqlSupportedResultSetType {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_RESULT_SET_TYPE_UNSPECIFIED" => Some(Self::SqlResultSetTypeUnspecified),
@@ -1788,9 +1770,7 @@ impl SqlSupportedResultSetType {
             "SQL_RESULT_SET_TYPE_SCROLL_INSENSITIVE" => {
                 Some(Self::SqlResultSetTypeScrollInsensitive)
             }
-            "SQL_RESULT_SET_TYPE_SCROLL_SENSITIVE" => {
-                Some(Self::SqlResultSetTypeScrollSensitive)
-            }
+            "SQL_RESULT_SET_TYPE_SCROLL_SENSITIVE" => Some(Self::SqlResultSetTypeScrollSensitive),
             _ => None,
         }
     }
@@ -1807,6 +1787,7 @@ impl SqlSupportedResultSetConcurrency {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlSupportedResultSetConcurrency::SqlResultSetConcurrencyUnspecified => {
@@ -1821,17 +1802,14 @@ impl SqlSupportedResultSetConcurrency {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_RESULT_SET_CONCURRENCY_UNSPECIFIED" => {
                 Some(Self::SqlResultSetConcurrencyUnspecified)
             }
-            "SQL_RESULT_SET_CONCURRENCY_READ_ONLY" => {
-                Some(Self::SqlResultSetConcurrencyReadOnly)
-            }
-            "SQL_RESULT_SET_CONCURRENCY_UPDATABLE" => {
-                Some(Self::SqlResultSetConcurrencyUpdatable)
-            }
+            "SQL_RESULT_SET_CONCURRENCY_READ_ONLY" => Some(Self::SqlResultSetConcurrencyReadOnly),
+            "SQL_RESULT_SET_CONCURRENCY_UPDATABLE" => Some(Self::SqlResultSetConcurrencyUpdatable),
             _ => None,
         }
     }
@@ -1865,6 +1843,7 @@ impl SqlSupportsConvert {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             SqlSupportsConvert::SqlConvertBigint => "SQL_CONVERT_BIGINT",
@@ -1875,12 +1854,8 @@ impl SqlSupportsConvert {
             SqlSupportsConvert::SqlConvertDecimal => "SQL_CONVERT_DECIMAL",
             SqlSupportsConvert::SqlConvertFloat => "SQL_CONVERT_FLOAT",
             SqlSupportsConvert::SqlConvertInteger => "SQL_CONVERT_INTEGER",
-            SqlSupportsConvert::SqlConvertIntervalDayTime => {
-                "SQL_CONVERT_INTERVAL_DAY_TIME"
-            }
-            SqlSupportsConvert::SqlConvertIntervalYearMonth => {
-                "SQL_CONVERT_INTERVAL_YEAR_MONTH"
-            }
+            SqlSupportsConvert::SqlConvertIntervalDayTime => "SQL_CONVERT_INTERVAL_DAY_TIME",
+            SqlSupportsConvert::SqlConvertIntervalYearMonth => "SQL_CONVERT_INTERVAL_YEAR_MONTH",
             SqlSupportsConvert::SqlConvertLongvarbinary => "SQL_CONVERT_LONGVARBINARY",
             SqlSupportsConvert::SqlConvertLongvarchar => "SQL_CONVERT_LONGVARCHAR",
             SqlSupportsConvert::SqlConvertNumeric => "SQL_CONVERT_NUMERIC",
@@ -1894,6 +1869,7 @@ impl SqlSupportsConvert {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SQL_CONVERT_BIGINT" => Some(Self::SqlConvertBigint),
@@ -1956,6 +1932,7 @@ impl XdbcDataType {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             XdbcDataType::XdbcUnknownType => "XDBC_UNKNOWN_TYPE",
@@ -1985,6 +1962,7 @@ impl XdbcDataType {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "XDBC_UNKNOWN_TYPE" => Some(Self::XdbcUnknownType),
@@ -2053,15 +2031,14 @@ impl XdbcDatetimeSubcode {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             XdbcDatetimeSubcode::XdbcSubcodeUnknown => "XDBC_SUBCODE_UNKNOWN",
             XdbcDatetimeSubcode::XdbcSubcodeYear => "XDBC_SUBCODE_YEAR",
             XdbcDatetimeSubcode::XdbcSubcodeTime => "XDBC_SUBCODE_TIME",
             XdbcDatetimeSubcode::XdbcSubcodeTimestamp => "XDBC_SUBCODE_TIMESTAMP",
-            XdbcDatetimeSubcode::XdbcSubcodeTimeWithTimezone => {
-                "XDBC_SUBCODE_TIME_WITH_TIMEZONE"
-            }
+            XdbcDatetimeSubcode::XdbcSubcodeTimeWithTimezone => "XDBC_SUBCODE_TIME_WITH_TIMEZONE",
             XdbcDatetimeSubcode::XdbcSubcodeTimestampWithTimezone => {
                 "XDBC_SUBCODE_TIMESTAMP_WITH_TIMEZONE"
             }
@@ -2072,21 +2049,13 @@ impl XdbcDatetimeSubcode {
             XdbcDatetimeSubcode::XdbcSubcodeDayToSecond => "XDBC_SUBCODE_DAY_TO_SECOND",
             XdbcDatetimeSubcode::XdbcSubcodeHourToMinute => "XDBC_SUBCODE_HOUR_TO_MINUTE",
             XdbcDatetimeSubcode::XdbcSubcodeHourToSecond => "XDBC_SUBCODE_HOUR_TO_SECOND",
-            XdbcDatetimeSubcode::XdbcSubcodeMinuteToSecond => {
-                "XDBC_SUBCODE_MINUTE_TO_SECOND"
-            }
+            XdbcDatetimeSubcode::XdbcSubcodeMinuteToSecond => "XDBC_SUBCODE_MINUTE_TO_SECOND",
             XdbcDatetimeSubcode::XdbcSubcodeIntervalYear => "XDBC_SUBCODE_INTERVAL_YEAR",
-            XdbcDatetimeSubcode::XdbcSubcodeIntervalMonth => {
-                "XDBC_SUBCODE_INTERVAL_MONTH"
-            }
+            XdbcDatetimeSubcode::XdbcSubcodeIntervalMonth => "XDBC_SUBCODE_INTERVAL_MONTH",
             XdbcDatetimeSubcode::XdbcSubcodeIntervalDay => "XDBC_SUBCODE_INTERVAL_DAY",
             XdbcDatetimeSubcode::XdbcSubcodeIntervalHour => "XDBC_SUBCODE_INTERVAL_HOUR",
-            XdbcDatetimeSubcode::XdbcSubcodeIntervalMinute => {
-                "XDBC_SUBCODE_INTERVAL_MINUTE"
-            }
-            XdbcDatetimeSubcode::XdbcSubcodeIntervalSecond => {
-                "XDBC_SUBCODE_INTERVAL_SECOND"
-            }
+            XdbcDatetimeSubcode::XdbcSubcodeIntervalMinute => "XDBC_SUBCODE_INTERVAL_MINUTE",
+            XdbcDatetimeSubcode::XdbcSubcodeIntervalSecond => "XDBC_SUBCODE_INTERVAL_SECOND",
             XdbcDatetimeSubcode::XdbcSubcodeIntervalYearToMonth => {
                 "XDBC_SUBCODE_INTERVAL_YEAR_TO_MONTH"
             }
@@ -2111,6 +2080,7 @@ impl XdbcDatetimeSubcode {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "XDBC_SUBCODE_UNKNOWN" => Some(Self::XdbcSubcodeUnknown),
@@ -2118,9 +2088,7 @@ impl XdbcDatetimeSubcode {
             "XDBC_SUBCODE_TIME" => Some(Self::XdbcSubcodeTime),
             "XDBC_SUBCODE_TIMESTAMP" => Some(Self::XdbcSubcodeTimestamp),
             "XDBC_SUBCODE_TIME_WITH_TIMEZONE" => Some(Self::XdbcSubcodeTimeWithTimezone),
-            "XDBC_SUBCODE_TIMESTAMP_WITH_TIMEZONE" => {
-                Some(Self::XdbcSubcodeTimestampWithTimezone)
-            }
+            "XDBC_SUBCODE_TIMESTAMP_WITH_TIMEZONE" => Some(Self::XdbcSubcodeTimestampWithTimezone),
             "XDBC_SUBCODE_SECOND" => Some(Self::XdbcSubcodeSecond),
             "XDBC_SUBCODE_YEAR_TO_MONTH" => Some(Self::XdbcSubcodeYearToMonth),
             "XDBC_SUBCODE_DAY_TO_HOUR" => Some(Self::XdbcSubcodeDayToHour),
@@ -2135,24 +2103,12 @@ impl XdbcDatetimeSubcode {
             "XDBC_SUBCODE_INTERVAL_HOUR" => Some(Self::XdbcSubcodeIntervalHour),
             "XDBC_SUBCODE_INTERVAL_MINUTE" => Some(Self::XdbcSubcodeIntervalMinute),
             "XDBC_SUBCODE_INTERVAL_SECOND" => Some(Self::XdbcSubcodeIntervalSecond),
-            "XDBC_SUBCODE_INTERVAL_YEAR_TO_MONTH" => {
-                Some(Self::XdbcSubcodeIntervalYearToMonth)
-            }
-            "XDBC_SUBCODE_INTERVAL_DAY_TO_HOUR" => {
-                Some(Self::XdbcSubcodeIntervalDayToHour)
-            }
-            "XDBC_SUBCODE_INTERVAL_DAY_TO_MINUTE" => {
-                Some(Self::XdbcSubcodeIntervalDayToMinute)
-            }
-            "XDBC_SUBCODE_INTERVAL_DAY_TO_SECOND" => {
-                Some(Self::XdbcSubcodeIntervalDayToSecond)
-            }
-            "XDBC_SUBCODE_INTERVAL_HOUR_TO_MINUTE" => {
-                Some(Self::XdbcSubcodeIntervalHourToMinute)
-            }
-            "XDBC_SUBCODE_INTERVAL_HOUR_TO_SECOND" => {
-                Some(Self::XdbcSubcodeIntervalHourToSecond)
-            }
+            "XDBC_SUBCODE_INTERVAL_YEAR_TO_MONTH" => Some(Self::XdbcSubcodeIntervalYearToMonth),
+            "XDBC_SUBCODE_INTERVAL_DAY_TO_HOUR" => Some(Self::XdbcSubcodeIntervalDayToHour),
+            "XDBC_SUBCODE_INTERVAL_DAY_TO_MINUTE" => Some(Self::XdbcSubcodeIntervalDayToMinute),
+            "XDBC_SUBCODE_INTERVAL_DAY_TO_SECOND" => Some(Self::XdbcSubcodeIntervalDayToSecond),
+            "XDBC_SUBCODE_INTERVAL_HOUR_TO_MINUTE" => Some(Self::XdbcSubcodeIntervalHourToMinute),
+            "XDBC_SUBCODE_INTERVAL_HOUR_TO_SECOND" => Some(Self::XdbcSubcodeIntervalHourToSecond),
             "XDBC_SUBCODE_INTERVAL_MINUTE_TO_SECOND" => {
                 Some(Self::XdbcSubcodeIntervalMinuteToSecond)
             }
@@ -2178,6 +2134,7 @@ impl Nullable {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             Nullable::NullabilityNoNulls => "NULLABILITY_NO_NULLS",
@@ -2186,6 +2143,7 @@ impl Nullable {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "NULLABILITY_NO_NULLS" => Some(Self::NullabilityNoNulls),
@@ -2221,6 +2179,7 @@ impl Searchable {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             Searchable::None => "SEARCHABLE_NONE",
@@ -2230,6 +2189,7 @@ impl Searchable {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "SEARCHABLE_NONE" => Some(Self::None),
@@ -2254,6 +2214,7 @@ impl UpdateDeleteRules {
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn as_str_name(&self) -> &'static str {
         match self {
             UpdateDeleteRules::Cascade => "CASCADE",
@@ -2264,6 +2225,7 @@ impl UpdateDeleteRules {
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "CASCADE" => Some(Self::Cascade),

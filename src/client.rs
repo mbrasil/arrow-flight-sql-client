@@ -38,13 +38,13 @@ where
     <T::ResponseBody as Body>::Error: Into<StdError> + Send,
 {
     /// create FlightSqlServiceClient using FlightServiceClient
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn new(client: RefCell<FlightServiceClient<T>>) -> Self {
         FlightSqlServiceClient { inner: client }
     }
 
     /// borrow mut FlightServiceClient
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(level = "debug", skip_all)]
     fn mut_client(&self) -> RefMut<'_, FlightServiceClient<T>> {
         self.inner.borrow_mut()
     }
@@ -235,6 +235,7 @@ where
     T::ResponseBody: Default + Body<Data = bytes::Bytes> + Send + 'static,
     <T::ResponseBody as Body>::Error: Into<StdError> + Send,
 {
+    #[tracing::instrument(level = "debug", skip_all)]
     pub(crate) fn new(
         client: &'a RefCell<FlightServiceClient<T>>,
         handle: Vec<u8>,
@@ -312,19 +313,19 @@ where
     }
 
     /// Retrieve the parameter schema from the query.
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(level = "debug", skip_all)]
     pub async fn parameter_schema(&self) -> Result<&Schema> {
         Ok(&self.parameter_schema)
     }
 
     /// Retrieve the ResultSet schema from the query.
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(level = "debug", skip_all)]
     pub async fn dataset_schema(&self) -> Result<&Schema> {
         Ok(&self.dataset_schema)
     }
 
     /// Set a RecordBatch that contains the parameters that will be bind.
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(level = "debug", skip_all)]
     pub async fn set_parameters(&mut self, parameter_binding: RecordBatch<'a>) -> Result<()> {
         self.parameter_binding = Some(parameter_binding);
         Ok(())
@@ -354,39 +355,39 @@ where
     }
 
     /// Check if the prepared statement is closed.
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn is_closed(&self) -> bool {
         self.is_closed
     }
 
     /// borrow mut FlightServiceClient
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(level = "debug", skip_all)]
     fn mut_client(&self) -> RefMut<'_, FlightServiceClient<T>> {
         self.inner.borrow_mut()
     }
 }
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(level = "debug", skip_all)]
 pub fn decode_error_to_arrow_error(err: prost::DecodeError) -> ArrowError {
     ArrowError::IoError(err.to_string())
 }
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(level = "debug", skip_all)]
 pub fn arrow_error_to_status(err: arrow::error::ArrowError) -> tonic::Status {
     tonic::Status::internal(format!("{:?}", err))
 }
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(level = "debug", skip_all)]
 pub fn status_to_arrow_error(status: tonic::Status) -> ArrowError {
     ArrowError::IoError(format!("{:?}", status))
 }
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(level = "debug", skip_all)]
 pub fn transport_error_to_arrow_erorr(error: tonic::transport::Error) -> ArrowError {
     ArrowError::IoError(format!("{}", error))
 }
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(level = "debug", skip_all)]
 pub fn arrow_schema_from_flight_info(fi: &FlightInfo) -> Result<Schema> {
     let ipc_message = arrow::ipc::size_prefixed_root_as_message(&fi.schema[4..])
         .map_err(|e| ArrowError::ComputeError(format!("{:?}", e)))?;
@@ -407,7 +408,7 @@ pub enum ArrowFlightData {
     Schema(arrow::datatypes::Schema),
 }
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(level = "debug", skip_all)]
 pub fn arrow_data_from_flight_data(
     flight_data: FlightData,
     arrow_schema_ref: &SchemaRef,
@@ -496,10 +497,12 @@ macro_rules! prost_message_ext {
     ($($name:ty,)*) => {
         $(
             impl ProstMessageExt for $name {
+                #[tracing::instrument(level = "debug", skip_all)]
                 fn type_url() -> &'static str {
                     concat!("type.googleapis.com/arrow.flight.protocol.sql.", stringify!($name))
                 }
 
+                #[tracing::instrument(level = "debug", skip_all)]
                 fn as_any(&self) -> prost_types::Any {
                     prost_types::Any {
                         type_url: <$name>::type_url().to_string(),
@@ -555,10 +558,12 @@ pub trait ProstAnyExt {
 }
 
 impl ProstAnyExt for prost_types::Any {
+    #[tracing::instrument(level = "debug", skip_all)]
     fn is<M: ProstMessageExt>(&self) -> bool {
         M::type_url() == self.type_url
     }
 
+    #[tracing::instrument(level = "debug", skip_all)]
     fn unpack<M: ProstMessageExt>(&self) -> Result<Option<M>> {
         if !self.is::<M>() {
             return Ok(None);
@@ -569,6 +574,7 @@ impl ProstAnyExt for prost_types::Any {
         Ok(Some(m))
     }
 
+    #[tracing::instrument(level = "debug", skip_all)]
     fn pack<M: ProstMessageExt>(message: &M) -> Result<prost_types::Any> {
         Ok(message.as_any())
     }
@@ -582,6 +588,7 @@ pub struct IpcMessage(pub Vec<u8>);
 impl Deref for IpcMessage {
     type Target = Vec<u8>;
 
+    #[tracing::instrument(level = "debug", skip_all)]
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -590,6 +597,7 @@ impl Deref for IpcMessage {
 impl TryFrom<IpcMessage> for Schema {
     type Error = ArrowError;
 
+    #[tracing::instrument(level = "debug", skip_all)]
     fn try_from(value: IpcMessage) -> Result<Self> {
         // CONTINUATION TAKES 4 BYTES
         // SIZE TAKES 4 BYTES (so read msg as size prefixed)
@@ -607,6 +615,7 @@ impl TryFrom<IpcMessage> for Schema {
 }
 
 impl FlightDescriptor {
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn new_cmd(cmd: Vec<u8>) -> Self {
         FlightDescriptor {
             r#type: DescriptorType::Cmd.into(),
@@ -615,6 +624,7 @@ impl FlightDescriptor {
         }
     }
 
+    #[tracing::instrument(level = "debug", skip_all)]
     pub fn new_path(path: Vec<String>) -> Self {
         FlightDescriptor {
             r#type: DescriptorType::Path.into(),
